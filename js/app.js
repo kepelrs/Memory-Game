@@ -1,18 +1,10 @@
-/*
- * Create a list that holds all of your cards
- */
-let allCards = [];
-let cardValues = document.querySelectorAll('.card i');
-for (let i of cardValues) {
-    allCards.push(i.className);
+let cardFaces, cardValues, cardElements;
+// List all card values
+cardValues = [];
+cardFaces = document.querySelectorAll('.card i');
+for (let i of cardFaces) {
+    cardValues.push(i.className);
 }
-
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -29,13 +21,31 @@ function shuffle(array) {
     return array;
 }
 
-// shuffle array of cards
-let shuffledCards = shuffle(allCards);
+/*  start game function
+*  - turns all cards elements face down
+*  - shuffles card values
+*  - places on the HTML
+*  - resets game state and counters
+*/
+cardElements = document.querySelectorAll('.card');
+function startGame() {
+    // ensure all cards are face down
+    for (let i of cardElements) {
+        i.className = "card";
+    }
 
-// place shuffled cards on the HTML
-cardValues.forEach(function(card) {
-    card.className = shuffledCards.shift();
-});
+    // shuffle array of cards
+    let shuffledCards = shuffle(cardValues);
+
+    // place shuffled cards on the HTML
+    cardFaces.forEach(function(card, index) {
+        card.className = shuffledCards[index];
+    });
+
+    // reset game state
+    resetGame();
+}
+
 
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -48,34 +58,46 @@ cardValues.forEach(function(card) {
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
-// game object that tracks game state
-let game;
-function startGame() {
+// GAME LOGIC
+let game, moveCounter, deck, restartBtn;
+
+// reset game object that tracks game state
+function resetGame() {
     game = {
         moves: 0,
         locked: 0,
         faceUp: [],
-        startTime: performance.now(),
+        startTime: 0,
+        finishTime: 0,
     };
+    moveCounter.innerHTML = 0;
 }
 
-// turn up card
+// turn up card and add to list of face up cards
 function turnUp(card) {
     card.className += " open show";
     game.faceUp.push(card);
 }
 
+// increment move counter
+moveCounter = document.querySelector(".moves");
+
 function incrementMoves() {
-    game.moves += 1;
+    // start counting game time from the first move
+    if (game.moves === 0) {
+        game.startTime = performance.now();
+    }
+
+    // each move = two card face up
+    game.moves += 0.5;
+    moveCounter.innerHTML = Math.floor(game.moves);
 }
 
 // compare cards that are face up
 function compareCards() {
-    // only compare when there are two cards face up
     if (game.faceUp.length === 2) {
         let firstCard = game.faceUp[0].firstElementChild.className;
         let secondCard = game.faceUp[1].firstElementChild.className;
-
 
         if (firstCard == secondCard) {
 
@@ -85,7 +107,7 @@ function compareCards() {
         } else if (firstCard != secondCard) {
 
             // if they are different, turn face down
-            setTimeout(resetFaceUp, 1000);
+            setTimeout(turnDown, 1000);
 
         }
     }
@@ -99,7 +121,7 @@ function lockFaceUp() {
     game.locked += 2;
 }
 
-function resetFaceUp() {
+function turnDown() {
     for (let card of game.faceUp) {
         card.className = "card";
     }
@@ -108,23 +130,30 @@ function resetFaceUp() {
 
 function checkGameOver() {
     if (game.locked === 16) {
-        let totalMoves = game.moves/2;
-        alert(`GameOver in ${totalMoves} moves.`);
+        game.finishTime = performance.now();
+        let totalTime = Math.floor((game.finishTime - game.startTime)/1000);
+
+        alert(`GameOver in ${game.moves} moves.`);
+        alert(`Total time was ${totalTime} seconds.`);
     }
 }
 
 // add event handlers to cards
 deck = document.querySelector('.deck');
 deck.addEventListener('click', function(evt) {
-    // only respond when target is a card,
-    // and game state is ready for new play
-    if (evt.target.className === "card" &&
-        game.faceUp.length !== 2) {
+    // delegate only to cards, and only when game state ready is for new play
+    if (evt.target.className === "card" && game.faceUp.length !== 2) {
         turnUp(evt.target);
         incrementMoves();
         compareCards();
         checkGameOver();
     }
+});
+
+// restart button behavior
+restartBtn = document.querySelector(".restart");
+restartBtn.addEventListener("click", function() {
+    startGame();
 });
 
 // start game
