@@ -1,8 +1,11 @@
 /*
  * Create a list that holds all of your cards
  */
-
-
+let allCards = [];
+let cardValues = document.querySelectorAll('.card i');
+for (let i of cardValues) {
+    allCards.push(i.className);
+}
 /*
  * Display the cards on the page
  *   - shuffle the list of cards using the provided "shuffle" method below
@@ -25,6 +28,13 @@ function shuffle(array) {
     return array;
 }
 
+// shuffle array of cards
+let shuffledCards = shuffle(allCards);
+
+// place shuffled cards on the HTML
+cardValues.forEach(function(card) {
+    card.className = shuffledCards.shift();
+});
 
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -48,7 +58,7 @@ deck.addEventListener('click', function(evt) {
     }
     // do nothing if card already matched
     if (evt.target.className.indexOf("match") != -1) {
-        alert(evt.target.className);
+        alert("card matched");
         return;
     }
     // turn up card otherwise
