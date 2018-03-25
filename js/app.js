@@ -46,20 +46,8 @@ function startGame() {
     resetGame();
 }
 
-
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
-
 // GAME LOGIC
-let game, moveCounter, deck, restartBtn;
+let game, moveCounter, deck, restartBtn, timerSpan;
 
 // reset game object that tracks game state
 function resetGame() {
@@ -70,7 +58,9 @@ function resetGame() {
         startTime: 0,
         finishTime: 0,
     };
-    moveCounter.innerHTML = 0;
+    moveCounter.innerHTML = "0 Moves";
+    timerSpan.innerHTML = "0 Seconds";
+    setInterval(updateTimer, 500);
 }
 
 // turn up card and add to list of face up cards
@@ -90,7 +80,16 @@ function incrementMoves() {
 
     // each move = two card face up
     game.moves += 0.5;
-    moveCounter.innerHTML = Math.floor(game.moves);
+    moveCounter.innerHTML = Math.floor(game.moves) + " Moves";
+}
+
+// update timer
+timerSpan = document.querySelector(".timer");
+
+function updateTimer() {
+    if (game.startTime && !game.finishTime) {
+        timerSpan.innerHTML = `${Math.floor((performance.now() - game.startTime)/1000)} Seconds`;
+    }
 }
 
 // compare cards that are face up
@@ -134,7 +133,7 @@ function checkGameOver() {
         let totalTime = Math.floor((game.finishTime - game.startTime)/1000);
 
         alert(`GameOver in ${game.moves} moves.`);
-        alert(`Total time was ${totalTime} seconds.`);
+        alert(`Total time was ${timerSpan.innerHTML}.`);
     }
 }
 
