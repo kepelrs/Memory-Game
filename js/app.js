@@ -6,6 +6,7 @@ let cardValues = document.querySelectorAll('.card i');
 for (let i of cardValues) {
     allCards.push(i.className);
 }
+
 /*
  * Display the cards on the page
  *   - shuffle the list of cards using the provided "shuffle" method below
@@ -47,21 +48,84 @@ cardValues.forEach(function(card) {
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
+// game object that tracks game state
+let game;
+function startGame() {
+    game = {
+        moves: 0,
+        locked: 0,
+        faceUp: [],
+        startTime: performance.now(),
+    };
+}
+
+// turn up card
+function turnUp(card) {
+    card.className += " open show";
+    game.faceUp.push(card);
+}
+
+function incrementMoves() {
+    game.moves += 1;
+}
+
+// compare cards that are face up
+function compareCards() {
+    // only compare when there are two cards face up
+    if (game.faceUp.length === 2) {
+        let firstCard = game.faceUp[0].firstElementChild.className;
+        let secondCard = game.faceUp[1].firstElementChild.className;
+
+
+        if (firstCard == secondCard) {
+
+            // if they are equal, lock face up
+            lockFaceUp();
+
+        } else if (firstCard != secondCard) {
+
+            // if they are different, turn face down
+            setTimeout(resetFaceUp, 1000);
+
+        }
+    }
+}
+
+function lockFaceUp() {
+    for (let card of game.faceUp) {
+        card.className = "card match";
+    }
+    game.faceUp = [];
+    game.locked += 2;
+}
+
+function resetFaceUp() {
+    for (let card of game.faceUp) {
+        card.className = "card";
+    }
+    game.faceUp = [];
+}
+
+function checkGameOver() {
+    if (game.locked === 16) {
+        let totalMoves = game.moves/2;
+        alert(`GameOver in ${totalMoves} moves.`);
+    }
+}
+
 // add event handlers to cards
 deck = document.querySelector('.deck');
 deck.addEventListener('click', function(evt) {
-
-    // do nothing if element clicked is not a card
-    if (evt.target.className.indexOf("card") == -1) {
-        alert("not a card");
-        return;
+    // only respond when target is a card,
+    // and game state is ready for new play
+    if (evt.target.className === "card" &&
+        game.faceUp.length !== 2) {
+        turnUp(evt.target);
+        incrementMoves();
+        compareCards();
+        checkGameOver();
     }
-    // do nothing if card already matched
-    if (evt.target.className.indexOf("match") != -1) {
-        alert("card matched");
-        return;
-    }
-    // turn up card otherwise
-    evt.target.className += " open show";
-
 });
+
+// start game
+startGame();
