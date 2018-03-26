@@ -1,20 +1,11 @@
 # Memory Game Project
 
-## Table of Contents
+## Information
 
-* [Instructions](#instructions)
-* [Contributing](#contributing)
+This project is a part of the Udacity's Front-End Nanodegree.
 
-## Instructions
+The starter project had some HTML and CSS styling to display a static version of the Memory Game project. My job was to make it interactive with CSS, Javascript and some HTML.
 
-The starter project has some HTML and CSS styling to display a static version of the Memory Game project. You'll need to convert this project from a static project to an interactive one. This will require modifying the HTML and CSS files, but primarily the JavaScript file.
+The game itself an implementation of your classic childhood memory game. The goal is to turn a card face up and then find/remember where it's pair was located and turn that face up as well. If you miss both cards get turn down again.
 
-To get started, open `js/app.js` and start building out the app's functionality
-
-For specific, detailed instructions, look at the project instructions in the [Udacity Classroom](https://classroom.udacity.com/me).
-
-## Contributing
-
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
-
-For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
+The game tracks how many moves, as well as how much time you took to complete the game.
