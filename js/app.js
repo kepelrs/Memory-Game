@@ -47,7 +47,7 @@ function startGame() {
 }
 
 // GAME LOGIC
-let game, moveCounter, deck, restartBtn, timerSpan;
+let game, moveCounter, deck, restartBtn, timerSpan, stars;
 
 // reset game object that tracks game state
 function resetGame() {
@@ -61,12 +61,6 @@ function resetGame() {
     moveCounter.innerHTML = "0 Moves";
     timerSpan.innerHTML = "0 Seconds";
     setInterval(updateTimer, 500);
-}
-
-// turn up card and add to list of face up cards
-function turnUp(card) {
-    card.className += " open show";
-    game.faceUp.push(card);
 }
 
 // increment move counter
@@ -92,6 +86,23 @@ function updateTimer() {
     }
 }
 
+// update score
+stars = document.querySelector(".stars");
+
+function updateScore() {
+    if (game.moves === 17) {
+        stars.lastElementChild.remove();
+    } else if (game.moves === 23) {
+        stars.lastElementChild.remove();
+    }
+}
+
+// turn up card and add to list of face up cards
+function turnUp(card) {
+    card.className += " open show";
+    game.faceUp.push(card);
+}
+
 // compare cards that are face up
 function compareCards() {
     if (game.faceUp.length === 2) {
@@ -106,7 +117,7 @@ function compareCards() {
         } else if (firstCard != secondCard) {
 
             // if they are different, turn face down
-            setTimeout(turnDown, 1000);
+            setTimeout(turnDown, 700);
 
         }
     }
@@ -137,13 +148,14 @@ function checkGameOver() {
     }
 }
 
-// add event handlers to cards
+// add event listener to game board
 deck = document.querySelector('.deck');
 deck.addEventListener('click', function(evt) {
     // delegate only to cards, and only when game state ready is for new play
     if (evt.target.className === "card" && game.faceUp.length !== 2) {
         turnUp(evt.target);
         incrementMoves();
+        updateScore();
         compareCards();
         checkGameOver();
     }
