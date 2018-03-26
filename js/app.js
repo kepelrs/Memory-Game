@@ -1,7 +1,11 @@
-let cardFaces, cardValues, cardElements;
+/*
+ * PRE-GAME SETUP
+ */
+
+
 // List all card values
-cardValues = [];
-cardFaces = document.querySelectorAll('.card i');
+let cardValues = [];
+const cardFaces = document.querySelectorAll('.card i');
 for (let i of cardFaces) {
     cardValues.push(i.className);
 }
@@ -21,17 +25,12 @@ function shuffle(array) {
     return array;
 }
 
-/*  start game function
-*  - turns all cards elements face down
-*  - shuffles card values
-*  - places on the HTML
-*  - resets game state and counters
-*/
-cardElements = document.querySelectorAll('.card');
+//  start game function
+const cardElements = document.querySelectorAll('.card');
 function startGame() {
     // ensure all cards are face down
     for (let i of cardElements) {
-        i.className = "card";
+        i.className = 'card';
     }
 
     // shuffle array of cards
@@ -46,10 +45,14 @@ function startGame() {
     resetGame();
 }
 
-// GAME LOGIC
-let game, moveCounter, deck, restartBtn, timerSpan, stars;
 
-// reset game object that tracks game state
+/*
+ * GAME FLOW
+ */
+
+
+// reset/create game object that tracks game state
+let game;
 function resetGame() {
     game = {
         moves: 0,
@@ -58,13 +61,13 @@ function resetGame() {
         startTime: 0,
         finishTime: 0,
     };
-    moveCounter.innerHTML = "0 Moves";
-    timerSpan.innerHTML = "0 Seconds";
+    moveCounter.innerHTML = '0 moves';
+    timerSpan.innerHTML = '0 seconds';
     setInterval(updateTimer, 500);
 }
 
 // increment move counter
-moveCounter = document.querySelector(".moves");
+const moveCounter = document.querySelector('.moves');
 
 function incrementMoves() {
     // start counting game time from the first move
@@ -74,20 +77,20 @@ function incrementMoves() {
 
     // each move = two card face up
     game.moves += 0.5;
-    moveCounter.innerHTML = Math.floor(game.moves) + " Moves";
+    moveCounter.innerHTML = Math.floor(game.moves) + ' moves';
 }
 
 // update timer
-timerSpan = document.querySelector(".timer");
+const timerSpan = document.querySelector('.timer');
 
 function updateTimer() {
     if (game.startTime && !game.finishTime) {
-        timerSpan.innerHTML = `${Math.floor((performance.now() - game.startTime)/1000)} Seconds`;
+        timerSpan.innerHTML = `${Math.floor((performance.now() - game.startTime)/1000)} seconds`;
     }
 }
 
 // update score
-stars = document.querySelector(".stars");
+const stars = document.querySelector('.stars');
 
 function updateScore() {
     if (game.moves === 17) {
@@ -99,7 +102,7 @@ function updateScore() {
 
 // turn up card and add to list of face up cards
 function turnUp(card) {
-    card.className += " open show";
+    card.className += ' open show';
     game.faceUp.push(card);
 }
 
@@ -123,36 +126,62 @@ function compareCards() {
     }
 }
 
+// lockup when cards match
 function lockFaceUp() {
     for (let card of game.faceUp) {
-        card.className = "card match";
+        card.className = 'card match';
     }
     game.faceUp = [];
     game.locked += 2;
 }
 
+// turn back down when card do not match
 function turnDown() {
     for (let card of game.faceUp) {
-        card.className = "card";
+        card.className = 'card';
     }
     game.faceUp = [];
 }
 
+// open game over modal when finished
 function checkGameOver() {
     if (game.locked === 16) {
         game.finishTime = performance.now();
-        let totalTime = Math.floor((game.finishTime - game.startTime)/1000);
-
-        alert(`GameOver in ${game.moves} moves.`);
-        alert(`Total time was ${timerSpan.innerHTML}.`);
+        gameOverMessage();
     }
 }
 
+
+/*
+ * POST GAME
+ */
+
+
+// game over message
+const modalPostgame = document.querySelector('.modal-postgame');
+const starScore = document.querySelector('.star-score');
+const moveScore = document.querySelector('.move-score');
+const timerScore = document.querySelector('.timer-score');
+
+function gameOverMessage() {
+    modalPostgame.style.display = 'flex';
+    starScore.innerHTML = stars.innerHTML;
+    moveScore.innerHTML += `${game.moves} moves.`;
+    timerScore.innerHTML += `${timerSpan.innerHTML}.`;
+}
+
+
+/*
+ * EVENT HANDLERS
+ */
+
+
 // add event listener to game board
-deck = document.querySelector('.deck');
+const deck = document.querySelector('.deck');
+
 deck.addEventListener('click', function(evt) {
     // delegate only to cards, and only when game state ready is for new play
-    if (evt.target.className === "card" && game.faceUp.length !== 2) {
+    if (evt.target.className === 'card' && game.faceUp.length !== 2) {
         turnUp(evt.target);
         incrementMoves();
         updateScore();
@@ -162,10 +191,22 @@ deck.addEventListener('click', function(evt) {
 });
 
 // restart button behavior
-restartBtn = document.querySelector(".restart");
-restartBtn.addEventListener("click", function() {
+const restartBtn = document.querySelector('.restart');
+
+restartBtn.addEventListener('click', function() {
     startGame();
 });
 
-// start game
-startGame();
+// dismiss modal button behavior
+const dismissBtns = document.querySelectorAll('.styled-btn');
+
+for (let btn of dismissBtns) {
+
+    btn.addEventListener('click', function(evt) {
+        let modal = evt.target.parentElement.parentElement;
+
+        modal.style.display = 'none';
+        startGame();
+    });
+
+}
