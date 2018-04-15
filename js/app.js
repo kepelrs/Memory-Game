@@ -166,8 +166,8 @@ const timerScore = document.querySelector('.timer-score');
 function gameOverMessage() {
     modalPostgame.style.display = 'flex';
     starScore.innerHTML = stars.innerHTML;
-    moveScore.innerHTML += `${game.moves} moves.`;
-    timerScore.innerHTML += `${timerSpan.innerHTML}.`;
+    moveScore.innerHTML = `You finished the game in just ${game.moves} moves.`;
+    timerScore.innerHTML = `Your total time was ${timerSpan.innerHTML}.`;
 }
 
 
