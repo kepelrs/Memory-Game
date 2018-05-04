@@ -119,6 +119,7 @@ h1 {
 .modal-postgame,
 .modal-pregame {
     display: none;
+    top: 0;
     justify-content: center;
     align-items: center;
     text-align: center;
